@@ -264,29 +264,29 @@
 </head>
 <body>
 
-<h2>🔍 Vietnamese OCR System</h2>
-<p class="subtitle">Upload image to extract Vietnamese text with PaddleOCR + VietOCR</p>
+<h2>Công cụ nhận diện chữ in và chuyển đổi sang dạng text</h2>
+<p class="subtitle">Sử dụng PaddleOCR và VietOCR</p>
 
 <div class="container">
   <!-- Left Panel: Upload & Progress -->
   <div class="left-panel">
-    <h3>📤 Upload Image</h3>
+    <h3>📤 Tải ảnh lên</h3>
     
     <div class="upload-area" id="upload-area">
       <div class="file-label" onclick="document.getElementById('file').click()">
-        📁 Click to Select Image
+        📁 Nhấn vào đây để chọn ảnh
       </div>
-      <p>or drag & drop image here</p>
-      <p style="font-size: 12px; color: #888;">Supports: JPG, PNG, BMP (Max: 10MB)</p>
+      <p>hoặc ké & thả ảnh tại đây</p>
+      <p style="font-size: 12px; color: #888;">Hỗ trợ: JPG, PNG, BMP (Max: 10MB)</p>
     </div>
     
     <input id="file" type="file" accept="image/*" onchange="updateFileInfo()">
     
     <div class="file-info" id="file-info">
-      No file selected
+      Không có file nào được chọn
     </div>
     
-    <button id="process-btn" onclick="sendOCR()" disabled>🚀 Start OCR Processing</button>
+    <button id="process-btn" onclick="sendOCR()" disabled>Nhận diện</button>
     
     <!-- Progress Panel -->
     <div id="progress-panel">
@@ -302,7 +302,7 @@
       <div class="stats">
         <div class="stat-item">
           <div class="stat-value" id="time-elapsed">0s</div>
-          <div>Time</div>
+          <div>Thời gian</div>
         </div>
         <div class="stat-item">
           <div class="stat-value" id="boxes-detected">0</div>
@@ -318,13 +318,13 @@
   
   <!-- Right Panel: Results -->
   <div class="right-panel">
-    <h3>📝 OCR Results</h3>
+    <h3>📝 Kết quả</h3>
     
     <div class="result-area" id="result-area">
       <div id="result-placeholder" style="text-align: center; color: #aaa; padding: 50px;">
         <div style="font-size: 48px; margin-bottom: 20px;">📄</div>
-        <p>OCR results will appear here</p>
-        <p style="font-size: 14px;">Upload an image and click "Start OCR Processing"</p>
+        <p>Xem kết quả tại đây</p>
+        <p style="font-size: 14px;">Upload ảnh và nhấn "Nhận"</p>
       </div>
       <div id="result-content" style="display: none;">
         <div id="result-text" class="result-text"></div>
@@ -334,7 +334,7 @@
     
     <div style="margin-top: 20px; text-align: center;">
       <button onclick="downloadResult()" style="padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
-        💾 Download as TXT
+        💾 Download
       </button>
       <button onclick="copyToClipboard()" style="padding: 10px 20px; background: #9b59b6; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
         📋 Copy Text

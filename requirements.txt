@@ -1,6 +1,6 @@
 einops==0.2.0
-paddlepaddle
-paddleocr
+# paddlepaddle   # đã cài thủ công version phù hợp: 2.6.2
+# paddleocr      # đã cài thủ công version phù hợp: 2.9.1
 pyclipper
 lmdb
 numpy
