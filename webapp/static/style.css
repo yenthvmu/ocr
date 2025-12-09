@@ -1,0 +1,21 @@
+:root{
+  --bg:#f6f8fb;
+  --card:#ffffff;
+  --accent:#2b6cff;
+  --muted:#6b7280;
+}
+*{box-sizing:border-box;font-family:Inter, 'Segoe UI', Roboto, Arial, sans-serif}
+body{background:var(--bg);margin:0;padding:30px}
+.container{max-width:880px;margin:30px auto;background:var(--card);border-radius:12px;padding:28px;box-shadow:0 6px 30px rgba(20,20,40,0.06)}
+h1{margin:0 0 6px;font-weight:700}
+.lead{color:var(--muted);margin:0 0 18px}
+.uploader{display:flex;gap:12px;align-items:center}
+.file-drop{flex:1;display:block;border:2px dashed #e6e9ef;border-radius:10px;padding:26px;text-align:center;cursor:pointer;background:linear-gradient(180deg,#fff, #fbfdff)}
+.file-drop input{display:none}
+.file-drop .message{color:#344054}
+.actions{min-width:120px}
+.btn{background:var(--accent);color:#fff;border:none;padding:12px 18px;border-radius:8px;font-weight:600;cursor:pointer}
+.result{margin-top:20px}
+.output{white-space:pre-wrap;background:#0f1724;color:#e6eef9;padding:16px;border-radius:8px;overflow:auto}
+.preview img{max-width:320px;border-radius:8px;margin-top:12px}
+footer{margin-top:18px;color:var(--muted)}

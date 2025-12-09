@@ -1,0 +1,88 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.ENV/
+.Python
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Logs and reports
+*.log
+logs/
+*.pid
+.coverage
+htmlcov/
+coverage.xml
+
+# Editor directories and files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Uploaded user files / runtime outputs
+webapp/static/uploads/
+webapp/uploads/
+uploads/
+result.txt
+*.result.txt
+
+# Model weights / large binaries
+# common ML artifacts
+*.pth
+*.pt
+*.pdmodel
+*.pdiparams
+*.onnx
+*.pb
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+models/
+checkpoints/
+pretrain_ocr/
+pretrained_models/
+
+# PaddleOCR local cache / downloads
+/.paddleocr/
+PaddleOCR/**/whl/
+
+# Python test and cache
+.pytest_cache/
+__pycache__/
+
+# Misc
+node_modules/
+.env
+*.env
+
+# Keep repo light: ignore any large media/data folders
+data/
+datasets/
+media/.DS_Store/
+
+predict_temp.ipynb
+.ipynb_checkpoints/
+vi00_vi01_transformer.yml/
+colab_paddle.ipynb/
+output/

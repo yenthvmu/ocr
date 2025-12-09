@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Vietnamese OCR</title>
+  <style>
+    body { 
+      font-family: 'Segoe UI', Arial, sans-serif; 
+      padding: 30px; 
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #f5f5f5;
+    }
+    
+    .container {
+      display: flex;
+      gap: 30px;
+      margin-top: 20px;
+    }
+    
+    .left-panel {
+      flex: 1;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .right-panel {
+      flex: 1;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    h2 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #7f8c8d;
+      margin-bottom: 30px;
+    }
+    
+    .upload-area {
+      border: 2px dashed #3498db;
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+      background: #f8fafc;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .upload-area:hover {
+      background: #ebf5fb;
+      border-color: #2980b9;
+    }
+    
+    .upload-area.dragover {
+      background: #d6eaf8;
+      border-color: #1abc9c;
+    }
+    
+    #file {
+      display: none;
+    }
+    
+    .file-label {
+      display: block;
+      padding: 15px 30px;
+      background: #3498db;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+      margin-bottom: 15px;
+    }
+    
+    .file-label:hover {
+      background: #2980b9;
+    }
+    
+    .file-info {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    #process-btn {
+      width: 100%;
+      padding: 15px;
+      background: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+    
+    #process-btn:hover:not(:disabled) {
+      background: #27ae60;
+    }
+    
+    #process-btn:disabled {
+      background: #95a5a6;
+      cursor: not-allowed;
+    }
+    
+    /* Progress Panel */
+    #progress-panel {
+      display: none;
+      margin-top: 25px;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+    }
+    
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .progress-title {
+      font-weight: bold;
+      color: #2c3e50;
+      font-size: 18px;
+    }
+    
+    .progress-status {
+      color: #3498db;
+      font-weight: bold;
+    }
+    
+    .progress-steps {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .progress-step {
+      padding: 12px 15px;
+      margin: 8px 0;
+      background: #f8f9fa;
+      border-left: 4px solid #ddd;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+    
+    .progress-step.active {
+      border-left-color: #3498db;
+      background: #ebf5fb;
+      font-weight: bold;
+    }
+    
+    .progress-step.completed {
+      border-left-color: #2ecc71;
+      background: #e8f6f3;
+      color: #27ae60;
+    }
+    
+    .progress-step.error {
+      border-left-color: #e74c3c;
+      background: #fdedec;
+      color: #c0392b;
+    }
+    
+    .step-time {
+      float: right;
+      font-size: 12px;
+      color: #888;
+    }
+    
+    /* Result Panel */
+    .result-area {
+      min-height: 300px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      background: #f8fafc;
+      margin-top: 20px;
+      overflow-y: auto;
+      max-height: 500px;
+    }
+    
+    .result-text {
+      white-space: pre-wrap;
+      font-family: 'Consolas', 'Monaco', monospace;
+      line-height: 1.6;
+      color: #2c3e50;
+    }
+    
+    .image-preview {
+      max-width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+    
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      font-size: 14px;
+      color: #7f8c8d;
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      flex: 1;
+      margin: 0 5px;
+    }
+    
+    .stat-value {
+      font-weight: bold;
+      font-size: 18px;
+      color: #2c3e50;
+    }
+    
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      background: #2ecc71;
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: none;
+      z-index: 1000;
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .notification.error {
+      background: #e74c3c;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h2>🔍 Vietnamese OCR System</h2>
+<p class="subtitle">Upload image to extract Vietnamese text with PaddleOCR + VietOCR</p>
+
+<div class="container">
+  <!-- Left Panel: Upload & Progress -->
+  <div class="left-panel">
+    <h3>📤 Upload Image</h3>
+    
+    <div class="upload-area" id="upload-area">
+      <div class="file-label" onclick="document.getElementById('file').click()">
+        📁 Click to Select Image
+      </div>
+      <p>or drag & drop image here</p>
+      <p style="font-size: 12px; color: #888;">Supports: JPG, PNG, BMP (Max: 10MB)</p>
+    </div>
+    
+    <input id="file" type="file" accept="image/*" onchange="updateFileInfo()">
+    
+    <div class="file-info" id="file-info">
+      No file selected
+    </div>
+    
+    <button id="process-btn" onclick="sendOCR()" disabled>🚀 Start OCR Processing</button>
+    
+    <!-- Progress Panel -->
+    <div id="progress-panel">
+      <div class="progress-header">
+        <div class="progress-title">📊 Processing Steps</div>
+        <div class="progress-status" id="progress-status">Waiting...</div>
+      </div>
+      
+      <ul class="progress-steps" id="progress-steps">
+        <!-- Steps will be added dynamically -->
+      </ul>
+      
+      <div class="stats">
+        <div class="stat-item">
+          <div class="stat-value" id="time-elapsed">0s</div>
+          <div>Time</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="boxes-detected">0</div>
+          <div>Text Areas</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="chars-recognized">0</div>
+          <div>Characters</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Right Panel: Results -->
+  <div class="right-panel">
+    <h3>📝 OCR Results</h3>
+    
+    <div class="result-area" id="result-area">
+      <div id="result-placeholder" style="text-align: center; color: #aaa; padding: 50px;">
+        <div style="font-size: 48px; margin-bottom: 20px;">📄</div>
+        <p>OCR results will appear here</p>
+        <p style="font-size: 14px;">Upload an image and click "Start OCR Processing"</p>
+      </div>
+      <div id="result-content" style="display: none;">
+        <div id="result-text" class="result-text"></div>
+        <div id="result-image"></div>
+      </div>
+    </div>
+    
+    <div style="margin-top: 20px; text-align: center;">
+      <button onclick="downloadResult()" style="padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        💾 Download as TXT
+      </button>
+      <button onclick="copyToClipboard()" style="padding: 10px 20px; background: #9b59b6; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+        📋 Copy Text
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Notification -->
+<div class="notification" id="notification"></div>
+
+<script>
+// Global variables
+let startTime = null;
+let progressInterval = null;
+
+// Initialize drag & drop
+document.getElementById('upload-area').addEventListener('dragover', function(e) {
+  e.preventDefault();
+  this.classList.add('dragover');
+});
+
+document.getElementById('upload-area').addEventListener('dragleave', function(e) {
+  this.classList.remove('dragover');
+});
+
+document.getElementById('upload-area').addEventListener('drop', function(e) {
+  e.preventDefault();
+  this.classList.remove('dragover');
+  
+  const files = e.dataTransfer.files;
+  if (files.length > 0) {
+    document.getElementById('file').files = files;
+    updateFileInfo();
+  }
+});
+
+// Update file info display
+function updateFileInfo() {
+  const fileInput = document.getElementById('file');
+  const fileInfo = document.getElementById('file-info');
+  const processBtn = document.getElementById('process-btn');
+  
+  if (fileInput.files.length > 0) {
+    const file = fileInput.files[0];
+    const fileSize = (file.size / 1024 / 1024).toFixed(2);
+    
+    if (fileSize > 10) {
+      fileInfo.innerHTML = `<span style="color: #e74c3c;">❌ File too large (${fileSize} MB). Max 10MB</span>`;
+      processBtn.disabled = true;
+    } else {
+      fileInfo.innerHTML = `✅ Selected: <strong>${file.name}</strong> (${fileSize} MB)`;
+      processBtn.disabled = false;
+    }
+  } else {
+    fileInfo.innerHTML = 'No file selected';
+    processBtn.disabled = true;
+  }
+}
+
+// Show notification
+function showNotification(message, isError = false) {
+  const notification = document.getElementById('notification');
+  notification.textContent = message;
+  notification.className = 'notification' + (isError ? ' error' : '');
+  notification.style.display = 'block';
+  
+  setTimeout(() => {
+    notification.style.display = 'none';
+  }, 3000);
+}
+
+// Update progress timer
+function updateTimer() {
+  if (startTime) {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    document.getElementById('time-elapsed').textContent = elapsed + 's';
+  }
+}
+
+// Add progress step
+function addProgressStep(message, type = 'active') {
+  const stepsList = document.getElementById('progress-steps');
+  const step = document.createElement('li');
+  step.className = 'progress-step ' + type;
+  
+  const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  step.innerHTML = `${message} <span class="step-time">${time}</span>`;
+  
+  stepsList.appendChild(step);
+  
+  // Scroll to bottom
+  stepsList.scrollTop = stepsList.scrollHeight;
+}
+
+// Update progress status
+function updateProgressStatus(status, isComplete = false) {
+  const statusEl = document.getElementById('progress-status');
+  statusEl.textContent = status;
+  
+  if (isComplete) {
+    statusEl.style.color = '#2ecc71';
+  }
+}
+
+// Main OCR function
+async function sendOCR() {
+  const file = document.getElementById('file').files[0];
+  if (!file) {
+    showNotification("Please select an image first!", true);
+    return;
+  }
+
+  // Reset UI
+  document.getElementById('progress-panel').style.display = 'block';
+  document.getElementById('result-placeholder').style.display = 'none';
+  document.getElementById('result-content').style.display = 'block';
+  
+  const stepsList = document.getElementById('progress-steps');
+  stepsList.innerHTML = '';
+  
+  // Start timer
+  startTime = Date.now();
+  progressInterval = setInterval(updateTimer, 1000);
+  
+  // Disable button and show initial progress
+  document.getElementById('process-btn').disabled = true;
+  document.getElementById('process-btn').textContent = '⏳ Processing...';
+  
+  addProgressStep('Starting OCR process...', 'active');
+  updateProgressStatus('Initializing...');
+  
+  // Create FormData
+  const form = new FormData();
+  form.append("image", file);
+
+  try {
+    // Step 1: Uploading
+    addProgressStep('Uploading image to server...', 'active');
+    updateProgressStatus('Uploading...');
+    
+    const response = await fetch("/api/ocr", {
+      method: "POST",
+      body: form
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+    
+    addProgressStep('Image uploaded successfully', 'completed');
+    
+    // Step 2: Processing
+    addProgressStep('Initializing OCR engines...', 'active');
+    updateProgressStatus('Initializing models...');
+    
+    // We'll get progress updates via Server-Sent Events or polling
+    // For now, simulate progress updates
+    simulateProgress();
+    
+    const data = await response.json();
+    
+    // Clear simulation interval
+    clearInterval(progressInterval);
+    
+    // Mark all as completed
+    const allSteps = document.querySelectorAll('.progress-step.active');
+    allSteps.forEach(step => {
+      step.classList.remove('active');
+      step.classList.add('completed');
+    });
+    
+    addProgressStep('OCR completed successfully!', 'completed');
+    updateProgressStatus('Completed', true);
+    
+    // Update results
+    document.getElementById('result-text').textContent = data.text || 'No text detected';
+    
+    // Update stats
+    const textLength = data.text ? data.text.replace(/\s/g, '').length : 0;
+    const lineCount = data.text ? data.text.split('\n').length : 0;
+    
+    document.getElementById('boxes-detected').textContent = lineCount;
+    document.getElementById('chars-recognized').textContent = textLength;
+    
+    // Show image preview if available
+    const resultImage = document.getElementById('result-image');
+    resultImage.innerHTML = '';
+    
+    if (data.preview) {
+      const img = document.createElement("img");
+      img.src = data.preview + "?v=" + Date.now();
+      img.className = "image-preview";
+      img.alt = "OCR Result with bounding boxes";
+      resultImage.appendChild(img);
+    }
+    
+    showNotification('OCR completed successfully!');
+    
+  } catch (error) {
+    console.error('OCR Error:', error);
+    
+    addProgressStep(`Error: ${error.message}`, 'error');
+    updateProgressStatus('Failed');
+    
+    showNotification('OCR processing failed!', true);
+    
+    document.getElementById('result-text').textContent = `Error: ${error.message}`;
+  } finally {
+    // Re-enable button
+    document.getElementById('process-btn').disabled = false;
+    document.getElementById('process-btn').textContent = '🚀 Start OCR Processing';
+    
+    // Stop timer
+    clearInterval(progressInterval);
+  }
+}
+
+// Simulate progress updates (replace with real SSE or polling)
+function simulateProgress() {
+  const steps = [
+    'Loading VietOCR model...',
+    'Loading PaddleOCR detector...',
+    'Detecting text regions...',
+    'Processing text region 1...',
+    'Processing text region 2...',
+    'Recognizing Vietnamese text...',
+    'Formatting results...'
+  ];
+  
+  let stepIndex = 0;
+  
+  const simulationInterval = setInterval(() => {
+    if (stepIndex < steps.length) {
+      addProgressStep(steps[stepIndex], 'active');
+      updateProgressStatus(`Step ${stepIndex + 1}/${steps.length}`);
+      stepIndex++;
+    } else {
+      clearInterval(simulationInterval);
+    }
+  }, 800);
+  
+  // Store interval ID to clear later
+  progressInterval = simulationInterval;
+}
+
+// Download result as TXT file
+function downloadResult() {
+  const text = document.getElementById('result-text').textContent;
+  if (!text || text === 'No text detected') {
+    showNotification('No text to download!', true);
+    return;
+  }
+  
+  const blob = new Blob([text], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ocr_result_${new Date().getTime()}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  
+  showNotification('Result downloaded!');
+}
+
+// Copy text to clipboard
+async function copyToClipboard() {
+  const text = document.getElementById('result-text').textContent;
+  if (!text || text === 'No text detected') {
+    showNotification('No text to copy!', true);
+    return;
+  }
+  
+  try {
+    await navigator.clipboard.writeText(text);
+    showNotification('Text copied to clipboard!');
+  } catch (err) {
+    showNotification('Failed to copy text!', true);
+  }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Vietnamese OCR Web Interface Ready');
+});
+</script>
+
+</body>
+</html>
